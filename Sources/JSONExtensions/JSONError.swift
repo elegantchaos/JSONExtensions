@@ -9,3 +9,12 @@ public enum JSONError: Error {
     case badEncoding(String)
     case jsonCorrupt(String, Error)
 }
+
+extension JSONError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+            case .badEncoding: return "Bad string encoding."
+            case .jsonCorrupt(let description, _): return description
+        }
+    }
+}
