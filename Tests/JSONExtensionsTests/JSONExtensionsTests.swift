@@ -48,4 +48,30 @@ final class JSONExtensionsTests: XCTestCase {
         }
     }
 
+    func testMissingQuote() {
+        let json = """
+                {
+                    property: "value"
+                }
+                """
+        
+        let data = json.data(using: .utf8)!
+        do {
+            try JSONSerialization.jsonObject(with: data)
+        } catch {
+            XCTAssertTrue(error.isJSONError)
+            let description = error.jsonErrorDescription(for: data)
+            let expected = """
+                No string key for value in object around line 2, column 4.
+
+                     1: {
+                     2:     property: "value"
+                            ^
+                     3: }
+                """
+            
+            XCTAssertEqual(description, expected)
+        }
+    }
+
 }

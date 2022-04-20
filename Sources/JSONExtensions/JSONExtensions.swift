@@ -67,26 +67,34 @@ extension Error {
         guard !description.starts(with: "JSON text did not start with array or object and option to allow fragments not set.") else {
             return fragmentErrorDescription(json: json)
         }
+
+        let words = description.split(separator: " ")
+        let lastWord = words.count - 1
         guard
-            let number = description.split(separator: " ").last?.split(separator: ".").first,
-            let index = Int(number)
+            lastWord > 1,
+            let line = Int(words[lastWord - 2].trimmingCharacters(in: .punctuationCharacters)),
+            let column = Int(words[lastWord].trimmingCharacters(in: .punctuationCharacters))
         else {
             return description
         }
 
-        var buffer = ""
+        let showColumnOn = line - 1
+        var buffer = description
+        buffer += "\n"
         let lines = json.split(separator: "\n")
         var count = 0
-        for n in 0 ..< lines.count {
-            count = count + lines[n].count
-            if count > index {
-                if n > 0 {
-                    buffer += "\(n - 1): \(lines[n - 1])"
+        let start = max(line - 2, 0)
+        let finish = min(line + 2, lines.count)
+
+        for n in start ..< finish {
+            buffer += String(format: "\n%6d: ", n + 1)
+            buffer += lines[n]
+            if n == showColumnOn {
+                buffer += "\n        "
+                for _ in 0..<column {
+                    buffer += " "
                 }
-                buffer += "\(n): \(lines[n])"
-                if n + 1 < lines.count {
-                    buffer += "\(n + 1): \(lines[n + 1])"
-                }
+                buffer += "^"
             }
         }
         
