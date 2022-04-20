@@ -6,18 +6,19 @@
 import Foundation
 
 extension Error {
+
     var isJSONError: Bool {
         let nserror = self as NSError
-        return (nserror.domain == NSCocoaErrorDomain) && (nserror.code == 3840)
+        return (nserror.domain == NSCocoaErrorDomain) && (nserror.code == NSPropertyListReadCorruptError)
     }
     
     func jsonErrorDescription(for data: Data) -> String {
+        guard isJSONError, let description = (self as NSError).userInfo[NSDebugDescriptionErrorKey] as? String else {
+            return String(describing: self)
+        }
+
         guard let json = String(data: data, encoding: .utf8) else {
             return "Data cannot be decoded."
-        }
-        
-        guard let description = (self as NSError).userInfo["NSDebugDescription"] as? String else {
-            return String(describing: self)
         }
 
         guard !description.starts(with: "JSON text did not start with array or object and option to allow fragments not set.") else {
@@ -34,13 +35,17 @@ extension Error {
             return description
         }
 
+        return lineColumnDescription(line: line, column: column, description: description, json: json)
+    }
+    
+    func lineColumnDescription(line: Int, column: Int, description: String, json: String) -> String {
         let showColumnOn = line - 1
         var buffer = description
         buffer += "\n"
         let lines = json.split(separator: "\n")
         let start = max(line - 2, 0)
         let finish = min(line + 2, lines.count)
-
+        
         for n in start ..< finish {
             buffer += String(format: "\n%6d: ", n + 1)
             buffer += lines[n]
@@ -57,7 +62,7 @@ extension Error {
     }
     
     func fragmentErrorDescription(json: String) -> String {
-        var buffer = "JSON text did not start with array or object and option to allow fragments not set."
+        var buffer = "Fragment found, and option to allow fragments not set."
         
         let stripped = json.trimmingCharacters(in: .whitespacesAndNewlines)
         buffer += "\n\n"

@@ -20,7 +20,7 @@ final class JSONExtensionsTests: XCTestCase {
         let json = "123"
         _ = JSONSerialization.jsonObject(with: json) { description, error in
             XCTAssertTrue(error.isJSONError)
-            XCTAssertEqual(description, "JSON text did not start with array or object and option to allow fragments not set.\n\n123\n")
+            XCTAssertEqual(description, "Fragment found, and option to allow fragments not set.\n\n123\n")
         }
     }
 
@@ -31,7 +31,7 @@ final class JSONExtensionsTests: XCTestCase {
         
         _ = JSONSerialization.jsonObject(with: json) { description, error in
             XCTAssertTrue(error.isJSONError)
-            XCTAssertEqual(description, "JSON text did not start with array or object and option to allow fragments not set.\n\n\"test\"\n")
+            XCTAssertEqual(description, "Fragment found, and option to allow fragments not set.\n\n\"test\"\n")
         }
     }
 
