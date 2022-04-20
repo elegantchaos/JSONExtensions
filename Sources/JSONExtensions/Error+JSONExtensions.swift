@@ -54,7 +54,7 @@ extension Error {
                 for _ in 0..<column {
                     buffer += " "
                 }
-                buffer += "^"
+                buffer += "👆"
             }
         }
         

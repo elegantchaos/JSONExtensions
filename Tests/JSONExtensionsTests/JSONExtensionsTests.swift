@@ -49,7 +49,7 @@ final class JSONExtensionsTests: XCTestCase {
 
                      1: {
                      2:     property: "value"
-                            ^
+                            👆
                      3: }
                 """
             
