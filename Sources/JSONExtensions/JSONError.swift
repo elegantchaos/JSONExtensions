@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum JSONError: Error {
+public enum JSONError: Error {
     case badEncoding(String)
     case jsonCorrupt(String, Error)
 }

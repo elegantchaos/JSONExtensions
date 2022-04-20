@@ -7,12 +7,12 @@ import Foundation
 
 extension Error {
 
-    var isJSONError: Bool {
+    public var isJSONError: Bool {
         let nserror = self as NSError
         return (nserror.domain == NSCocoaErrorDomain) && (nserror.code == NSPropertyListReadCorruptError)
     }
     
-    func jsonErrorDescription(for data: Data) -> String {
+    public func jsonErrorDescription(for data: Data) -> String {
         guard isJSONError, let description = (self as NSError).userInfo[NSDebugDescriptionErrorKey] as? String else {
             return String(describing: self)
         }

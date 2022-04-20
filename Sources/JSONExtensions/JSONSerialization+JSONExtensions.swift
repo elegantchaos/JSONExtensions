@@ -5,7 +5,7 @@
 
 import Foundation
 
-extension JSONSerialization {
+public extension JSONSerialization {
     static func jsonObject(from url: URL, options: JSONSerialization.ReadingOptions = []) throws -> Any {
         let data = try Data(contentsOf: url)
         return try jsonObjectWrappingError(with: data, options: options)
