@@ -9,10 +9,43 @@ import XCTestExtensions
 @testable import JSONExtensions
 
 final class JSONExtensionsTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(JSONExtensions().text, "Hello, World!")
+    func testEmpty() {
+        let json = ""
+        let data = json.data(using: .utf8)!
+        do {
+            try JSONSerialization.jsonObject(with: data)
+        } catch {
+            XCTAssertTrue(error.isJSONError)
+            let description = error.jsonErrorDescription(for: data)
+            XCTAssertEqual(description, "Unable to parse empty data.")
+        }
     }
+    
+    func testNumberFragment() {
+        let json = "123"
+        let data = json.data(using: .utf8)!
+        do {
+            try JSONSerialization.jsonObject(with: data)
+        } catch {
+            XCTAssertTrue(error.isJSONError)
+            let description = error.jsonErrorDescription(for: data)
+            XCTAssertEqual(description, "JSON text did not start with array or object and option to allow fragments not set.\n\n123\n")
+        }
+    }
+
+    func testStringFragment() {
+        let json = """
+                "test"
+                """
+        
+        let data = json.data(using: .utf8)!
+        do {
+            try JSONSerialization.jsonObject(with: data)
+        } catch {
+            XCTAssertTrue(error.isJSONError)
+            let description = error.jsonErrorDescription(for: data)
+            XCTAssertEqual(description, "JSON text did not start with array or object and option to allow fragments not set.\n\n\"test\"\n")
+        }
+    }
+
 }
